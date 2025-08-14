@@ -1,5 +1,5 @@
 use crate::models::file_node::FileNode;
-use std::fs;
+use std::{fs};
 use std::path::PathBuf;
 use tauri::command;
 
@@ -33,4 +33,20 @@ pub fn list_dir_recursive(path: PathBuf) -> Vec<FileNode> {
     }
 
     result
+}
+
+#[command]
+pub fn read_file(path: String) -> Result<String, String> {
+    match fs::read_to_string(&path) {
+        Ok(contents) => Ok(contents),
+        Err(err) => Err(format!("Failed to read file {}: {}", path, err)),
+    }
+}
+
+#[command]
+pub fn get_home_dir() -> Result<String, String> {
+    match dirs::home_dir() {
+        Some(path) => Ok(path.to_string_lossy().to_string()),
+        None => Err("Failed to get home directory".to_string()),
+    }
 }

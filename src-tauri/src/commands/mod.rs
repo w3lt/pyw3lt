@@ -1,1 +1,3 @@
-pub mod fs_commands;
+pub mod fs;
+pub mod project;
+pub mod python;

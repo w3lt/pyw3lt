@@ -4,7 +4,7 @@ import loadDir from "@/utils/loadDir";
 
 export const useFileTree = (rootPath: string) => {
   const [fileTree, setFileTree] = useState<FileNode>({
-    name: "root",
+    name: rootPath.replace(/\/$/, "").split("/").pop()!,
     path: rootPath,
     isDirectory: true,
     open: true,

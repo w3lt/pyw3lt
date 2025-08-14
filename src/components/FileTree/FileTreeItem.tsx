@@ -1,8 +1,12 @@
 import FileNode from "@/models/FileNode";
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
+import { PymonContext } from "@/contexts/PymonContext";
+import readFile from "@/utils/readFile";
+import { invoke } from "@tauri-apps/api/core";
+import getFileIcon from "@/utils/fileIcon";
 
 interface FileTreeItemProps {
   node: FileNode;
@@ -10,42 +14,29 @@ interface FileTreeItemProps {
   onSelect?: (node: FileNode) => void;
 }
 
-const getFileIcon = (fileName: string) => {
-  const extension = fileName.split(".").pop()?.toLowerCase()
-
-  switch (extension) {
-    case "tsx":
-    case "jsx":
-      return "⚛️"
-    case "ts":
-    case "js":
-      return "📜"
-    case "css":
-    case "scss":
-      return "🎨"
-    case "json":
-      return "📋"
-    case "md":
-      return "📝"
-    case "svg":
-      return "🖼️"
-    case "ico":
-      return "🔷"
-    default:
-      return "📄"
-  }
-}
-
 export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItemProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const { setBuffer, setCurrentFile } = useContext(PymonContext)
+  const [isExpanded, setIsExpanded] = useState(node.open ?? false)
   const isDirectory = node.isDirectory
 
-  const handleToggle = () => {
-    if (isDirectory) {
+  const handleClick = () => {
+    if (isDirectory) { // If the item is a directory, then we toggle (open/close) it
       setIsExpanded(!isExpanded)
+    } else { // If the item is a file, we read the file content and load it into the editor
+      // Load the file content to the buffer
+      readFile(node.path)
+        .then(content => {
+          setBuffer(content)
+          setCurrentFile(node)
+        })
+        .catch(async err => {
+          await invoke("log", { message: err.toString() })
+        })
     }
     onSelect?.(node)
   }
+
+  const Icon = getFileIcon(node.name)
 
   return (
     <div className="select-none">
@@ -57,7 +48,7 @@ export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItem
           "text-foreground/90 hover:text-foreground",
         )}
         style={{ paddingLeft: `${depth * 16 + 4}px` }}
-        onClick={handleToggle}
+        onClick={handleClick}
       >
         {/* Expand/Collapse Icon */}
         <div className="w-4 h-4 flex items-center justify-center">
@@ -79,7 +70,7 @@ export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItem
               <Folder className="w-4 h-4 text-blue-500" />
             )
           ) : (
-            <span className="text-xs">{getFileIcon(node.name)}</span>
+            <Icon className="w-4 h-4 text-blue-500" />
           )}
         </div>
 

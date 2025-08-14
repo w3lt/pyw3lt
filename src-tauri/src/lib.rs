@@ -19,7 +19,11 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             log,
-            commands::fs_commands::list_dir,
+            commands::fs::list_dir,
+            commands::fs::read_file,
+            commands::fs::get_home_dir,
+            commands::project::create_project,
+            commands::python::list_versions,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

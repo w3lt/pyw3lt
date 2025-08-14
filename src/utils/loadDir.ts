@@ -10,9 +10,7 @@ const convertRustFileNode = (item: RustFileNode): FileNode => ({
   children: item.is_dir ? item.children?.map(convertRustFileNode) : undefined
 });
 
-const loadDir = async (path: string): Promise<FileNode[]> => {
+export default async function loadDir(path: string): Promise<FileNode[]> {
   const response = await invoke("list_dir", { path });
   return (response as RustFileNode[]).map(convertRustFileNode);
 };
-
-export default loadDir;
