@@ -1,13 +1,30 @@
 import PackageInfo from "@/types/backend/PackageInfo";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, RotateCw } from "lucide-react";
+import { useContext, useState } from "react";
+import { ProjectContext } from "@/contexts/ProjectContext";
+import installPythonPackage from "@/utils/installPythonPackage";
+import { invoke } from "@tauri-apps/api/core";
 
 interface Props {
   info: PackageInfo
 }
 
 export default function PackageListItem({ info }: Props) {
+  const { currentDirectory } = useContext(ProjectContext)
   const { name, author, version, description } = info;
+
+  const [isInstalling, setIsInstalling] = useState(false);
+
+  const handleInstallPackage = () => {
+    setIsInstalling(true);
+    installPythonPackage(name, currentDirectory, version)
+      .catch(async (error) => {
+        invoke("log", { message: error });
+      })
+      .finally(() => setIsInstalling(false));
+  }
+
   return (
     <div
       className="group flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3 p-3 rounded-lg hover:bg-accent/30 transition-all duration-200 border border-transparent hover:border-border/50"
@@ -36,8 +53,14 @@ export default function PackageListItem({ info }: Props) {
         variant="ghost"
         className="h-8 w-full sm:w-8 p-0 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/50 sm:flex-shrink-0 sm:mt-0.5 flex items-center justify-center gap-2 sm:gap-0"
         title="Install package"
+        onClick={handleInstallPackage}
+        disabled={isInstalling}
       >
-        <Download className="w-4 h-4" />
+        {isInstalling ? (
+          <RotateCw className="w-4 h-4 animate-spin" />
+        ) : (
+          <Download className="w-4 h-4" />
+        )}
       </Button>
     </div>
   )

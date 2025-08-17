@@ -4,3 +4,4 @@ pub mod python;
 pub mod file;
 pub mod event;
 pub mod pypi;
+pub mod python_package;

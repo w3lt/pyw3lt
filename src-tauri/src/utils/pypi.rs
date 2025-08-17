@@ -2,6 +2,7 @@ use std::{fs, io::{self, Write}, path::PathBuf};
 use fuzzy_matcher::FuzzyMatcher;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use reqwest::blocking::get;
+use crate::commands::pypi::PackageInfo;
 
 /// Returns the path to the local package list file (~/.pymon/package-list)
 fn package_list_path() -> PathBuf {
@@ -106,5 +107,39 @@ pub fn get_last_sync_time() -> Result<usize, String> {
             content.trim().parse::<usize>().map_err(|e| e.to_string())
         }
         Err(e) => Err(format!("Failed to read sync time: {}", e)),
+    }
+}
+
+pub fn query_package_info(name: String) -> PackageInfo {
+    let client = reqwest::blocking::Client::new();
+    let url = format!("https://pypi.org/pypi/{}/json", name);
+    match client.get(&url).send() {
+        Ok(resp) => {
+            if let Ok(json) = resp.json::<serde_json::Value>() {
+                let author = json["info"]["author"].as_str().unwrap_or("").to_string();
+                let version = json["info"]["version"].as_str().unwrap_or("").to_string();
+                let description = json["info"]["summary"].as_str().map(|s| s.to_string());
+
+                PackageInfo {
+                    name,
+                    author,
+                    version,
+                    description,
+                }
+            } else {
+                PackageInfo {
+                    name: "".to_string(),
+                    author: "".to_string(),
+                    version: String::new(),
+                    description: None,
+                }
+            }
+        }
+        Err(_) => PackageInfo {
+            name: "".to_string(),
+            author: "".to_string(),
+            version: String::new(),
+            description: None,
+        },
     }
 }

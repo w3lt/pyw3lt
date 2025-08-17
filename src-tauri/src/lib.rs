@@ -30,6 +30,8 @@ pub fn run() {
             commands::pypi::search_packages,
             commands::pypi::sync_package_list,
             commands::pypi::get_last_sync_time,
+            commands::python_package::list_installed_packages,
+            commands::python_package::install_python_package,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

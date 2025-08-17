@@ -1,5 +1,5 @@
 import UtilityContent from "../UtilityContent";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import searchPackages from "@/utils/searchPackage";
 import PackageInfo from "@/types/backend/PackageInfo";
@@ -7,11 +7,20 @@ import { invoke } from "@tauri-apps/api/core";
 import PackageListItem from "./PackageListItem";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import SyncStatusBar from "./SyncStatusBar";
+import useInstalledPackages from "@/hooks/useInstalledPackages";
+import { ProjectContext } from "@/contexts/ProjectContext";
 
 export default function PypiManager() {
+  const { currentDirectory } = useContext(ProjectContext)
   const [query, setQuery] = useState("")
   const [isSearching, setIsSearching] = useState(false)
   const [packages, setPackages] = useState<PackageInfo[]>([]);
+
+  const { installedPackages, isLoading } = useInstalledPackages(currentDirectory)
+  useEffect(() => {
+    if (isLoading) return
+    setPackages(installedPackages)
+  }, [isLoading, installedPackages])
 
   const handleSearch = () => {
     if (query.trim().length === 0) {
