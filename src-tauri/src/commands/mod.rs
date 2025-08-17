@@ -1,3 +1,6 @@
 pub mod fs;
 pub mod project;
 pub mod python;
+pub mod file;
+pub mod event;
+pub mod pypi;

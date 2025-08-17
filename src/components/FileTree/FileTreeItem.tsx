@@ -3,7 +3,7 @@ import { useContext, useState } from "react"
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
-import { PymonContext } from "@/contexts/PymonContext";
+import { ProjectContext } from "@/contexts/ProjectContext";
 import readFile from "@/utils/readFile";
 import { invoke } from "@tauri-apps/api/core";
 import getFileIcon from "@/utils/fileIcon";
@@ -15,7 +15,7 @@ interface FileTreeItemProps {
 }
 
 export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItemProps) {
-  const { setBuffer, setCurrentFile } = useContext(PymonContext)
+  const { setBuffers, buffers } = useContext(ProjectContext)
   const [isExpanded, setIsExpanded] = useState(node.open ?? false)
   const isDirectory = node.isDirectory
 
@@ -23,15 +23,37 @@ export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItem
     if (isDirectory) { // If the item is a directory, then we toggle (open/close) it
       setIsExpanded(!isExpanded)
     } else { // If the item is a file, we read the file content and load it into the editor
-      // Load the file content to the buffer
-      readFile(node.path)
-        .then(content => {
-          setBuffer(content)
-          setCurrentFile(node)
-        })
-        .catch(async err => {
-          await invoke("log", { message: err.toString() })
-        })
+      const existingBufferIndex = buffers.findIndex(b => b.file.path === node.path);
+      if (existingBufferIndex !== -1) {
+        setBuffers(prev => {
+          const newPrev = [...prev];
+          newPrev.forEach(b => b.active = false); // Deactivate all buffers
+          newPrev[existingBufferIndex] = {
+            ...newPrev[existingBufferIndex],
+            active: true
+          };
+          return newPrev;
+        });
+      } else {
+        // Load the file content to the buffer
+        readFile(node.path)
+          .then(content => {
+            setBuffers(prev => {
+              const newPrev = [...prev]
+              newPrev.forEach(b => b.active = false); // Deactivate all buffers
+              newPrev.push({
+                file: node,
+                bufferContent: content,
+                active: true,
+                isDirty: false
+              });
+              return newPrev;
+            })
+          })
+          .catch(async err => {
+            await invoke("log", { message: err.toString() })
+          })
+      }
     }
     onSelect?.(node)
   }

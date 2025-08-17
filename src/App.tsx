@@ -1,44 +1,37 @@
 import { useState } from "react";
 import "./App.css";
-import { Editor } from "@monaco-editor/react";
+import View from "@/types/views";
+import GreetingView from "./views/GreetingView";
+import MainView from "./views/MainView";
+import { AppContextProvider } from "@/contexts/AppContext";
 import { useBackendEventListener } from "./hooks/backendEventListener";
-import FileTree from "./components/FileTree";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { invoke } from "@tauri-apps/api/core";
-import { PymonContextProvider } from "./contexts/PymonContext";
-import FileNode from "./models/FileNode";
-import NewProjectDialog from "./components/dialogs/NewProjectDialog";
+import NewProjectDialog from "@/components/dialogs/NewProjectDialog";
 import useHomeDirectory from "./hooks/useHomeDirectory";
 
-function App() {
-  const [buffer, setBuffer] = useState("# Write your Python code here");
-  const [currentFile, setCurrentFile] = useState<FileNode>();
-  const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
 
+function App() {
+  const [view, setView] = useState<View>("greeting");
   const [rootPath, setRootPath] = useState<string>();
+  const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
 
   const { homeDir, isLoading } = useHomeDirectory();
 
   useBackendEventListener<string>("project-selected", (event) => {
-    void invoke("log", { message: event.payload })
     setRootPath(event.payload);
+    setView("main");
   });
 
   useBackendEventListener("new-project", () => {
-    void invoke("log", { message: "New project dialog opened" });
     setNewProjectDialogOpen(true);
-  })
+  });
 
   if (isLoading || homeDir === undefined) return null
   return (
-    <PymonContextProvider
+    <AppContextProvider
       value={{
         homeDir,
-        currentDirectory: rootPath,
-        currentFile,
-        setCurrentFile,
-        buffer,
-        setBuffer,
+        view,
+        setView,
         newProjectDialogOpen,
         setNewProjectDialogOpen
       }}
@@ -46,36 +39,10 @@ function App() {
       {/* Dialogs */}
       {newProjectDialogOpen && <NewProjectDialog />}
 
-      <div style={{ width: "100vw", height: "100vh" }}>
-        <PanelGroup direction="horizontal">
-          {/* Left pane = File tree */}
-          <Panel defaultSize={20}>
-            {rootPath && <FileTree rootPath={rootPath} />}
-          </Panel>
-
-          <PanelResizeHandle className="bg-blue-500 hover:bg-blue-600 cursor-col-resize transition-colors duration-150 w-0.5" />
-
-          {/* Right pane = Editor */}
-          <Panel>
-            <Editor
-              height="100%"
-              width="100%"
-              defaultLanguage="python"
-              value={buffer}
-              theme="vs-light"
-              onChange={(value) => setBuffer(value ?? "")}
-              options={{
-                fontSize: 14,
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                wordWrap: "on",
-              }}
-            />
-          </Panel>
-        </PanelGroup>
-      </div>
-    </PymonContextProvider>
-  );
+      {view === "greeting" && <GreetingView />}
+      {view === "main" && rootPath && <MainView projectRootPath={rootPath} />}
+    </AppContextProvider>
+  )
 }
 
 export default App;

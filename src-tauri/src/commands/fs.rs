@@ -36,14 +36,6 @@ pub fn list_dir_recursive(path: PathBuf) -> Vec<FileNode> {
 }
 
 #[command]
-pub fn read_file(path: String) -> Result<String, String> {
-    match fs::read_to_string(&path) {
-        Ok(contents) => Ok(contents),
-        Err(err) => Err(format!("Failed to read file {}: {}", path, err)),
-    }
-}
-
-#[command]
 pub fn get_home_dir() -> Result<String, String> {
     match dirs::home_dir() {
         Some(path) => Ok(path.to_string_lossy().to_string()),

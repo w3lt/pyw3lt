@@ -24,6 +24,7 @@ pub fn create_menu<R: Runtime>(app: &mut App<R>) -> tauri::Result<()> {
     // Handle menu events
     file_submenu::handle_open_project_event(app);
     file_submenu::handle_new_project_event(app);
+    file_submenu::handle_save_file_event(app);
 
     Ok(())
 }

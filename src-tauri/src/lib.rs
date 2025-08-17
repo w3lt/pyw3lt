@@ -1,6 +1,7 @@
 mod commands;
 mod models;
 mod menu;
+mod utils;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -20,10 +21,13 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             log,
             commands::fs::list_dir,
-            commands::fs::read_file,
             commands::fs::get_home_dir,
             commands::project::create_project,
             commands::python::list_versions,
+            commands::file::read_file,
+            commands::file::save_file,
+            commands::event::open_project,
+            commands::pypi::search_packages,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

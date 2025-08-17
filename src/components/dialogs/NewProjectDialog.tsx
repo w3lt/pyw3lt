@@ -14,15 +14,15 @@ import {
 } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { PymonContext } from "@/contexts/PymonContext"
 
 import { open } from '@tauri-apps/plugin-dialog';
 import { invoke } from "@tauri-apps/api/core"
 import createProject from "@/utils/createProject"
 import useAvailablePythonVersions from "@/hooks/useAvailablePythonVersions"
+import { AppContext } from "@/contexts/AppContext"
 
 export default function NewProjectDialog() {
-  const { newProjectDialogOpen, setNewProjectDialogOpen, homeDir } = useContext(PymonContext)
+  const { newProjectDialogOpen, setNewProjectDialogOpen, homeDir } = useContext(AppContext)
 
   const pythonVersions = useAvailablePythonVersions()
 
