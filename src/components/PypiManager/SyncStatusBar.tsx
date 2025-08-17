@@ -11,7 +11,7 @@ interface Props {
   /**
    * The action to perform after syncing
    */
-  onPostSync?: () => void;
+  onPostSync?: () => void
 }
 
 export default function SyncStatusBar({ onPostSync }: Props) {

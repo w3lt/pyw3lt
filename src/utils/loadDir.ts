@@ -13,4 +13,4 @@ const convertRustFileNode = (item: RustFileNode): FileNode => ({
 export default async function loadDir(path: string): Promise<FileNode[]> {
   const response = await invoke("list_dir", { path })
   return (response as RustFileNode[]).map(convertRustFileNode)
-};
+}

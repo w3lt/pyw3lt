@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 
 interface Props {
-  buffer: Buffer;
+  buffer: Buffer
   onSelect: (buffer: Buffer) => void
   onClose: (buffer: Buffer) => void
 }

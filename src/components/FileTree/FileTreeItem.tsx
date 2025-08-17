@@ -9,9 +9,9 @@ import { invoke } from "@tauri-apps/api/core"
 import getFileIcon from "@/utils/fileIcon"
 
 interface FileTreeItemProps {
-  node: FileNode;
-  depth?: number;
-  onSelect?: (node: FileNode) => void;
+  node: FileNode
+  depth?: number
+  onSelect?: (node: FileNode) => void
 }
 
 export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItemProps) {

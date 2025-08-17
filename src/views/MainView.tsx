@@ -11,7 +11,7 @@ import { UtilitiesBar } from "@/components/UtilityBar"
 import PypiManager from "@/components/PypiManager"
 
 interface Props {
-  projectRootPath: string;
+  projectRootPath: string
 }
 
 export default function MainView({ projectRootPath }: Props) {
