@@ -7,6 +7,7 @@ import { invoke } from "@tauri-apps/api/core";
 import PackageListItem from "./PackageListItem";
 import { Button } from "@/components/ui/button";
 import formatSyncTime from "@/utils/syncTime";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 export default function PypiManager() {
   const [query, setQuery] = useState("")
@@ -46,7 +47,7 @@ export default function PypiManager() {
 
   return (
     <UtilityContent title="Python Packages">
-      <div className="p-2">
+      <div className="p-2 flex flex-col h-full">
         <div className="relative">
           <input
             placeholder="Search packages..."
@@ -75,7 +76,7 @@ export default function PypiManager() {
             Sync
           </Button>
         </div>
-        <div className="mt-4 space-y-2">
+        <ScrollArea className="mt-4 space-y-2 flex-1 overflow-y-auto w-full scrollbar-hide">
           {isSearching ? (
             <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -86,9 +87,8 @@ export default function PypiManager() {
               .map((pkg) => (
                 <PackageListItem key={pkg.name} info={pkg} />
               ))
-          )
-          }
-        </div>
+          )}
+        </ScrollArea>
       </div>
     </UtilityContent>
   )

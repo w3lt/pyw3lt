@@ -14,7 +14,6 @@ const useSearchPackage = (query: string) => {
       return;
     }
 
-    invoke("log", { message: `Searching for package: ${query}` })
     searchPackages(query, 10)
       .then((results) => {
         setPackages(results);

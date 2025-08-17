@@ -1,7 +1,6 @@
 import PackageInfo from "@/types/backend/PackageInfo";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface Props {
   info: PackageInfo
@@ -11,7 +10,6 @@ export default function PackageListItem({ info }: Props) {
   const { name, author, version, description } = info;
   return (
     <div
-      key={name}
       className="group flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3 p-3 rounded-lg hover:bg-accent/30 transition-all duration-200 border border-transparent hover:border-border/50"
     >
       <div className="flex-1 min-w-0 space-y-1">
