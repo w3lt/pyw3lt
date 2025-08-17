@@ -1,11 +1,11 @@
-import { Buffer } from "@/contexts/ProjectContext";
-import { cn } from "@/lib/utils";
-import getFileIcon from "@/utils/fileIcon";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { Buffer } from "@/contexts/ProjectContext"
+import { cn } from "@/lib/utils"
+import getFileIcon from "@/utils/fileIcon"
+import { Button } from "@/components/ui/button"
+import { X } from "lucide-react"
 
 interface Props {
-  buffer: Buffer;
+  buffer: Buffer
   onSelect: (buffer: Buffer) => void
   onClose: (buffer: Buffer) => void
 }

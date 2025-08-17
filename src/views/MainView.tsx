@@ -1,34 +1,34 @@
-import { useState } from "react";
-import { Editor } from "@monaco-editor/react";
-import { useBackendEventListener } from "@/hooks/backendEventListener";
-import FileTree from "@/components/FileTree";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { invoke } from "@tauri-apps/api/core";
-import { ProjectContextProvider, Buffer } from "@/contexts/ProjectContext";
-import Bufferline from "@/components/Bufferline";
-import { UtilityTabId } from "@/components/UtilityBar/utilityTabs";
-import { UtilitiesBar } from "@/components/UtilityBar";
-import PypiManager from "@/components/PypiManager";
+import { useState } from "react"
+import { Editor } from "@monaco-editor/react"
+import { useBackendEventListener } from "@/hooks/backendEventListener"
+import FileTree from "@/components/FileTree"
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
+import { invoke } from "@tauri-apps/api/core"
+import { ProjectContextProvider, Buffer } from "@/contexts/ProjectContext"
+import Bufferline from "@/components/Bufferline"
+import { UtilityTabId } from "@/components/UtilityBar/utilityTabs"
+import { UtilitiesBar } from "@/components/UtilityBar"
+import PypiManager from "@/components/PypiManager"
 
 interface Props {
-  projectRootPath: string;
+  projectRootPath: string
 }
 
 export default function MainView({ projectRootPath }: Props) {
-  const [buffers, setBuffers] = useState<Buffer[]>([]);
-  const [activeTab, setActiveTab] = useState<UtilityTabId>("explorer");
+  const [buffers, setBuffers] = useState<Buffer[]>([])
+  const [activeTab, setActiveTab] = useState<UtilityTabId>("explorer")
 
   const currentBuffer = buffers.find(b => b.active)
 
   useBackendEventListener("save-file", () => {
-    if (!currentBuffer || currentBuffer?.file.path.trim().length === 0) return;
+    if (!currentBuffer || currentBuffer?.file.path.trim().length === 0) return
     void invoke("save_file", {
       path: currentBuffer.file.path,
       content: buffers,
     })
       .catch((error) => {
-        void invoke("log", { message: `Error saving file: ${error}` });
-      });
+        void invoke("log", { message: `Error saving file: ${error}` })
+      })
   })
 
   return (
@@ -65,16 +65,16 @@ export default function MainView({ projectRootPath }: Props) {
                 value={currentBuffer?.bufferContent}
                 theme="vs-light"
                 onChange={(value) => setBuffers(prev => {
-                  const newPrev = [...prev];
-                  const index = newPrev.findIndex(b => b.active);
+                  const newPrev = [...prev]
+                  const index = newPrev.findIndex(b => b.active)
                   if (index !== -1) {
                     newPrev[index] = {
                       ...newPrev[index],
                       bufferContent: value ?? "",
                       isDirty: true
-                    };
+                    }
                   }
-                  return newPrev;
+                  return newPrev
                 })}
                 options={{
                   fontSize: 14,
@@ -88,5 +88,5 @@ export default function MainView({ projectRootPath }: Props) {
         </PanelGroup>
       </div>
     </ProjectContextProvider>
-  );
+  )
 }

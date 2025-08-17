@@ -1,6 +1,6 @@
-import { UtilityTabId } from "@/components/UtilityBar/utilityTabs";
-import FileNode from "@/models/FileNode";
-import { createContext, Dispatch, SetStateAction } from "react";
+import { UtilityTabId } from "@/components/UtilityBar/utilityTabs"
+import FileNode from "@/types/frontend/FileNode"
+import { createContext, Dispatch, SetStateAction } from "react"
 
 export interface Buffer {
   file: FileNode
@@ -29,4 +29,4 @@ export const ProjectContext = createContext<{
   setActiveTab: () => null
 })
 
-export const ProjectContextProvider = ProjectContext.Provider;
+export const ProjectContextProvider = ProjectContext.Provider

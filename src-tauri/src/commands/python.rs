@@ -1,5 +1,4 @@
 use std::process::{Command, Stdio};
-use serde::Serialize;
 use tauri::command;
 
 #[command]

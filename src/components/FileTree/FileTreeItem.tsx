@@ -1,17 +1,17 @@
-import FileNode from "@/models/FileNode";
+import FileNode from "@/types/frontend/FileNode"
 import { useContext, useState } from "react"
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
-import { ProjectContext } from "@/contexts/ProjectContext";
-import readFile from "@/utils/readFile";
-import { invoke } from "@tauri-apps/api/core";
-import getFileIcon from "@/utils/fileIcon";
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react"
+import { ProjectContext } from "@/contexts/ProjectContext"
+import readFile from "@/utils/readFile"
+import { invoke } from "@tauri-apps/api/core"
+import getFileIcon from "@/utils/fileIcon"
 
 interface FileTreeItemProps {
-  node: FileNode;
-  depth?: number;
-  onSelect?: (node: FileNode) => void;
+  node: FileNode
+  depth?: number
+  onSelect?: (node: FileNode) => void
 }
 
 export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItemProps) {
@@ -23,31 +23,31 @@ export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItem
     if (isDirectory) { // If the item is a directory, then we toggle (open/close) it
       setIsExpanded(!isExpanded)
     } else { // If the item is a file, we read the file content and load it into the editor
-      const existingBufferIndex = buffers.findIndex(b => b.file.path === node.path);
+      const existingBufferIndex = buffers.findIndex(b => b.file.path === node.path)
       if (existingBufferIndex !== -1) {
         setBuffers(prev => {
-          const newPrev = [...prev];
-          newPrev.forEach(b => b.active = false); // Deactivate all buffers
+          const newPrev = [...prev]
+          newPrev.forEach(b => b.active = false) // Deactivate all buffers
           newPrev[existingBufferIndex] = {
             ...newPrev[existingBufferIndex],
             active: true
-          };
-          return newPrev;
-        });
+          }
+          return newPrev
+        })
       } else {
         // Load the file content to the buffer
         readFile(node.path)
           .then(content => {
             setBuffers(prev => {
               const newPrev = [...prev]
-              newPrev.forEach(b => b.active = false); // Deactivate all buffers
+              newPrev.forEach(b => b.active = false) // Deactivate all buffers
               newPrev.push({
                 file: node,
                 bufferContent: content,
                 active: true,
                 isDirty: false
-              });
-              return newPrev;
+              })
+              return newPrev
             })
           })
           .catch(async err => {

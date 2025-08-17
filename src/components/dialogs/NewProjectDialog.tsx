@@ -15,7 +15,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
-import { open } from '@tauri-apps/plugin-dialog';
+import { open } from "@tauri-apps/plugin-dialog"
 import { invoke } from "@tauri-apps/api/core"
 import createProject from "@/utils/createProject"
 import useAvailablePythonVersions from "@/hooks/useAvailablePythonVersions"
@@ -41,7 +41,7 @@ export default function NewProjectDialog() {
         pythonVersion
       })
     } catch (error) {
-      await invoke("log", { message: `Error creating project: ${error}` });
+      await invoke("log", { message: `Error creating project: ${error}` })
     } finally {
       if (pythonVersion && projectPath && projectName) {
         // Reset form

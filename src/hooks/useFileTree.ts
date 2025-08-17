@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import FileNode from "../models/FileNode";
-import loadDir from "@/utils/loadDir";
+import { useEffect, useState } from "react"
+import FileNode from "../types/frontend/FileNode"
+import loadDir from "@/utils/loadDir"
 
 export const useFileTree = (rootPath: string) => {
   const [fileTree, setFileTree] = useState<FileNode>({
@@ -9,9 +9,9 @@ export const useFileTree = (rootPath: string) => {
     isDirectory: true,
     open: true,
     children: []
-  });
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>();
+  })
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string>()
 
   useEffect(() => {
     loadDir(rootPath)
@@ -19,15 +19,15 @@ export const useFileTree = (rootPath: string) => {
         setFileTree(prev => ({
           ...prev,
           children: res
-        }));
+        }))
       })
       .catch(err => {
-        setError(err.message);
+        setError(err.message)
       })
       .finally(() => {
-        setIsLoading(false);
+        setIsLoading(false)
       })
-  }, [])
+  }, [rootPath])
 
-  return { fileTree, isLoading, error };
-};
+  return { fileTree, isLoading, error }
+}

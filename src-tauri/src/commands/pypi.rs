@@ -2,56 +2,29 @@ use serde::Serialize;
 use tauri::command;
 
 use crate::utils;
+use crate::utils::python_package::query_package_info;
 
 #[derive(Serialize)]
 pub struct PackageInfo {
-    name: String,
-    author: String,
-    version: String,
-    description: Option<String>,
+    pub(crate) name: String,
+    pub(crate) author: String,
+    pub(crate) version: String,
+    pub(crate) description: Option<String>,
+    /// The version of the package that is installed, if any.
+    pub(crate) installed_version: Option<String>,
 }
 
 #[command]
-pub async fn search_packages(query: String, result_number: Option<usize>) -> Result<Vec<PackageInfo>, String> {
+pub async fn search_packages(query: String, result_number: Option<usize>, project_path: String) -> Result<Vec<PackageInfo>, String> {
     let result_number = result_number.unwrap_or(10);
 
     tauri::async_runtime::spawn_blocking(move || {
         let results = utils::pypi::search_packages(&query, result_number);
-        let client = reqwest::blocking::Client::new();
 
         results
             .into_iter()
             .map(|(name, _score)| {
-                let url = format!("https://pypi.org/pypi/{}/json", name);
-                match client.get(&url).send() {
-                    Ok(resp) => {
-                        if let Ok(json) = resp.json::<serde_json::Value>() {
-                            let author = json["info"]["author"].as_str().unwrap_or("").to_string();
-                            let version = json["info"]["version"].as_str().unwrap_or("").to_string();
-                            let description = json["info"]["summary"].as_str().map(|s| s.to_string());
-
-                            PackageInfo {
-                                name,
-                                author,
-                                version,
-                                description,
-                            }
-                        } else {
-                            PackageInfo {
-                                name: "".to_string(),
-                                author: "".to_string(),
-                                version: String::new(),
-                                description: None,
-                            }
-                        }
-                    }
-                    Err(_) => PackageInfo {
-                        name: "".to_string(),
-                        author: "".to_string(),
-                        version: String::new(),
-                        description: None,
-                    },
-                }
+                query_package_info(name.to_string(), project_path.clone())
             })
             .filter(|info| info.name != "")
             .collect::<Vec<PackageInfo>>()

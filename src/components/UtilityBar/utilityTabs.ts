@@ -1,11 +1,11 @@
-import { Files, GitBranch, Package, Search } from "lucide-react";
+import { Files, GitBranch, Package, Search } from "lucide-react"
 
 type UtilityTabId = "explorer" | "packages" | "search" | "git";
 
 const utilityTabs: Array<{
-  id: UtilityTabId;
-  icon: React.ElementType;
-  label: string;
+  id: UtilityTabId
+  icon: React.ElementType
+  label: string
 }> = [
   {
     id: "explorer",
@@ -29,5 +29,5 @@ const utilityTabs: Array<{
   }
 ]
 
-export type { UtilityTabId };
-export default utilityTabs;
+export type { UtilityTabId }
+export default utilityTabs

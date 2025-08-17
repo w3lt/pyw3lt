@@ -1,9 +1,9 @@
-import { useFileTree } from "../../hooks/useFileTree";
-import FileTreeItem from "./FileTreeItem";
-import UtilityContent from "../UtilityContent";
+import { useFileTree } from "../../hooks/useFileTree"
+import FileTreeItem from "./FileTreeItem"
+import UtilityContent from "../UtilityContent"
 
 interface Props {
-  rootPath: string;
+  rootPath: string
 }
 
 export default function FileTree({ rootPath }: Props) {

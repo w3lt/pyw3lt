@@ -1,21 +1,21 @@
-import getLastSyncTime from "@/utils/getLasSyncTime";
-import { useEffect, useState } from "react";
+import getLastSyncTime from "@/utils/getLasSyncTime"
+import { useEffect, useState } from "react"
 
 const useLastSyncTime = () => {
-  const [lastSyncTime, setLastSyncTime] = useState<Date>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [lastSyncTime, setLastSyncTime] = useState<Date>()
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
     getLastSyncTime()
       .then(t => {
-        setLastSyncTime(new Date(t));
+        setLastSyncTime(new Date(t))
       })
       .finally(() => {
-        setIsLoading(false);
-      });
+        setIsLoading(false)
+      })
   }, [])
 
-  return { lastSyncTime, setLastSyncTime, isLoading };
+  return { lastSyncTime, setLastSyncTime, isLoading }
 }
 
-export default useLastSyncTime;
+export default useLastSyncTime
