@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "@tauri-apps/api/core"
 
 const installPythonPackage = async (
   packageName: string,
@@ -12,4 +12,4 @@ const installPythonPackage = async (
   })
 }
 
-export default installPythonPackage;
+export default installPythonPackage

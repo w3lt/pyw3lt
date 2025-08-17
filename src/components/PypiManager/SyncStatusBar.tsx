@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
-import useLastSyncTime from "@/hooks/useLastSyncTime";
-import useNow from "@/hooks/useNow";
-import syncPackageList from "@/utils/syncPackageList";
-import formatSyncTime from "@/utils/syncTime";
-import { invoke } from "@tauri-apps/api/core";
-import { Loader2, RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { Button } from "@/components/ui/button"
+import useLastSyncTime from "@/hooks/useLastSyncTime"
+import useNow from "@/hooks/useNow"
+import syncPackageList from "@/utils/syncPackageList"
+import formatSyncTime from "@/utils/syncTime"
+import { invoke } from "@tauri-apps/api/core"
+import { Loader2, RefreshCw } from "lucide-react"
+import { useState } from "react"
 
 interface Props {
   /**
@@ -16,15 +16,15 @@ interface Props {
 
 export default function SyncStatusBar({ onPostSync }: Props) {
   const { lastSyncTime, setLastSyncTime, isLoading } = useLastSyncTime()
-  const now = useNow();
-  const [isSyncing, setIsSyncing] = useState(false);
+  const now = useNow()
+  const [isSyncing, setIsSyncing] = useState(false)
 
   const handleSync = async () => {
-    setIsSyncing(true);
+    setIsSyncing(true)
     syncPackageList()
       .then(() => {
-        setLastSyncTime(new Date());
-        onPostSync?.();
+        setLastSyncTime(new Date())
+        onPostSync?.()
       })
       .catch(async (error) => {
         await invoke("log", { message: error })

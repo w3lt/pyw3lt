@@ -1,2 +1,2 @@
 type View = "greeting" | "main";
-export default View;
+export default View

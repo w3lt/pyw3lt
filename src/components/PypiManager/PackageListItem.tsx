@@ -1,10 +1,10 @@
-import PackageInfo from "@/types/backend/PackageInfo";
-import { Button } from "@/components/ui/button";
-import { Download, RotateCw } from "lucide-react";
-import { useContext, useState } from "react";
-import { ProjectContext } from "@/contexts/ProjectContext";
-import installPythonPackage from "@/utils/installPythonPackage";
-import { invoke } from "@tauri-apps/api/core";
+import PackageInfo from "@/types/backend/PackageInfo"
+import { Button } from "@/components/ui/button"
+import { Download, RotateCw } from "lucide-react"
+import { useContext, useState } from "react"
+import { ProjectContext } from "@/contexts/ProjectContext"
+import installPythonPackage from "@/utils/installPythonPackage"
+import { invoke } from "@tauri-apps/api/core"
 
 interface Props {
   info: PackageInfo
@@ -12,17 +12,17 @@ interface Props {
 
 export default function PackageListItem({ info }: Props) {
   const { currentDirectory } = useContext(ProjectContext)
-  const { name, author, version, description } = info;
+  const { name, author, version, description } = info
 
-  const [isInstalling, setIsInstalling] = useState(false);
+  const [isInstalling, setIsInstalling] = useState(false)
 
   const handleInstallPackage = () => {
-    setIsInstalling(true);
+    setIsInstalling(true)
     installPythonPackage(name, currentDirectory, version)
       .catch(async (error) => {
-        invoke("log", { message: error });
+        invoke("log", { message: error })
       })
-      .finally(() => setIsInstalling(false));
+      .finally(() => setIsInstalling(false))
   }
 
   return (

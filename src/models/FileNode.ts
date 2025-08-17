@@ -12,4 +12,4 @@ interface FileNode {
     children?: FileNode[];
 }
 
-export default FileNode;
+export default FileNode

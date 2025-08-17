@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api/core";
-import { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/core"
+import { useEffect, useState } from "react"
 
 export default function useHomeDirectory() {
   const [homeDir, setHomeDir] = useState<string>()

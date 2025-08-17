@@ -9,4 +9,4 @@ const formatSyncTime = (date: Date, now: Date) => {
   return date.toLocaleDateString()
 }
 
-export default formatSyncTime;
+export default formatSyncTime

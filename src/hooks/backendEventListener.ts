@@ -1,4 +1,4 @@
-import { Event, listen } from "@tauri-apps/api/event";
+import { Event, listen } from "@tauri-apps/api/event"
 
 export const useBackendEventListener = <T>(
     name: string,

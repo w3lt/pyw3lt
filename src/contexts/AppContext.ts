@@ -1,5 +1,5 @@
-import View from "@/types/views";
-import { createContext, Dispatch, SetStateAction } from "react";
+import View from "@/types/views"
+import { createContext, Dispatch, SetStateAction } from "react"
 
 export const AppContext = createContext<{
   homeDir: string
@@ -15,4 +15,4 @@ export const AppContext = createContext<{
   setNewProjectDialogOpen: () => null
 })
 
-export const AppContextProvider = AppContext.Provider;
+export const AppContextProvider = AppContext.Provider

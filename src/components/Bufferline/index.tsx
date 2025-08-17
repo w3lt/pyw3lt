@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useContext } from "react";
-import { ProjectContext } from "@/contexts/ProjectContext";
-import BufferTab from "./BufferTab";
+import { Card } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useContext } from "react"
+import { ProjectContext } from "@/contexts/ProjectContext"
+import BufferTab from "./BufferTab"
 
 export default function Bufferline() {
   const { buffers, setBuffers } = useContext(ProjectContext)
@@ -18,32 +18,32 @@ export default function Bufferline() {
                 buffer={buffer}
                 onSelect={buffer => {
                   setBuffers(prev => {
-                    const newPrev = [...prev];
-                    newPrev.forEach(b => b.active = false); // Deactivate all buffers
-                    const index = newPrev.findIndex(b => b.file.path === buffer.file.path);
+                    const newPrev = [...prev]
+                    newPrev.forEach(b => b.active = false) // Deactivate all buffers
+                    const index = newPrev.findIndex(b => b.file.path === buffer.file.path)
                     if (index !== -1) {
                       newPrev[index] = {
                         ...newPrev[index],
                         active: true
-                      };
+                      }
                     }
-                    return newPrev;
-                  });
+                    return newPrev
+                  })
                 }}
                 onClose={() => {
                   setBuffers(prev => {
-                    const newPrev = [...prev];
-                    const index = newPrev.findIndex(b => b.file.path === buffer.file.path);
+                    const newPrev = [...prev]
+                    const index = newPrev.findIndex(b => b.file.path === buffer.file.path)
                     if (index !== -1) {
                       if (newPrev[index].active && newPrev.length > 1) {
                         // If the closed buffer is active, activate the next one
-                        const nextIndex = (index + 1) % newPrev.length;
-                        newPrev[nextIndex].active = true;
+                        const nextIndex = (index + 1) % newPrev.length
+                        newPrev[nextIndex].active = true
                       }
-                      newPrev.splice(index, 1);
+                      newPrev.splice(index, 1)
                     }
-                    return newPrev;
-                  });
+                    return newPrev
+                  })
                 }}
               />
             ))}
