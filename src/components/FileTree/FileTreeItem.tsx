@@ -1,4 +1,4 @@
-import FileNode from "@/models/FileNode"
+import FileNode from "@/types/frontend/FileNode"
 import { useContext, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"

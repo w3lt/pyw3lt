@@ -1,4 +1,4 @@
-import FileNode from "@/models/FileNode"
+import FileNode from "@/types/frontend/FileNode"
 import RustFileNode from "@/types/backend/FileNode"
 import { invoke } from "@tauri-apps/api/core"
 

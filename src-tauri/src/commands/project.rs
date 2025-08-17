@@ -1,6 +1,5 @@
 use std::{fs, path::PathBuf};
 use std::process::Command;
-use serde_json::json;
 use tauri::command;
 
 #[command]

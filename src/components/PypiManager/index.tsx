@@ -2,13 +2,13 @@ import UtilityContent from "../UtilityContent"
 import { useContext, useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
 import searchPackages from "@/utils/searchPackage"
-import PackageInfo from "@/types/backend/PackageInfo"
 import { invoke } from "@tauri-apps/api/core"
 import PackageListItem from "./PackageListItem"
 import { ScrollArea } from "@radix-ui/react-scroll-area"
 import SyncStatusBar from "./SyncStatusBar"
 import useInstalledPackages from "@/hooks/useInstalledPackages"
 import { ProjectContext } from "@/contexts/ProjectContext"
+import PackageInfo from "@/types/frontend/PackageInfo"
 
 export default function PypiManager() {
   const { currentDirectory } = useContext(ProjectContext)
@@ -16,7 +16,7 @@ export default function PypiManager() {
   const [isSearching, setIsSearching] = useState(false)
   const [packages, setPackages] = useState<PackageInfo[]>([])
 
-  const { installedPackages, isLoading } = useInstalledPackages(currentDirectory)
+  const { installedPackages, isLoading } = useInstalledPackages(currentDirectory, query.trim().length === 0)
   useEffect(() => {
     if (isLoading) return
     setPackages(installedPackages)
@@ -24,12 +24,12 @@ export default function PypiManager() {
 
   const handleSearch = () => {
     if (query.trim().length === 0) {
-      setPackages([])
+      setPackages(installedPackages)
       return
     }
 
     setIsSearching(true)
-    searchPackages(query, 10)
+    searchPackages(query, 10, currentDirectory)
       .then((results) => {
         setPackages(results)
       })
@@ -41,6 +41,7 @@ export default function PypiManager() {
       })
   }
 
+  if (isLoading) return null
   return (
     <UtilityContent title="Python Packages">
       <div className="p-2 flex flex-col h-full">
@@ -68,7 +69,37 @@ export default function PypiManager() {
           ) : (
             packages
               .map((pkg) => (
-                <PackageListItem key={pkg.name} info={pkg} />
+                <PackageListItem
+                  key={pkg.name}
+                  info={pkg}
+                  postAction={action => {
+                    if (action === "install") {
+                      setPackages(prev => {
+                        const newPrev = [...prev]
+                        const index = newPrev.findIndex(p => p.name === pkg.name)
+                        if (index !== -1) {
+                          newPrev[index] = {
+                            ...newPrev[index],
+                            installedVersion: pkg.version
+                          }
+                        }
+                        return newPrev
+                      })
+                    } else if (action === "uninstall") {
+                      setPackages(prev => {
+                        const newPrev = [...prev]
+                        const index = newPrev.findIndex(p => p.name === pkg.name)
+                        if (index !== -1) {
+                          newPrev[index] = {
+                            ...newPrev[index],
+                            installedVersion: undefined
+                          }
+                        }
+                        return newPrev
+                      })
+                    }
+                  }}
+                />
               ))
           )}
         </ScrollArea>

@@ -1,9 +1,9 @@
-import PackageInfo from "@/types/backend/PackageInfo"
+import PackageInfo from "@/types/frontend/PackageInfo"
 import listInstalledPackages from "@/utils/listInstalledPackages"
 import { invoke } from "@tauri-apps/api/core"
 import { useEffect, useState } from "react"
 
-const useInstalledPackages = (projectPath: string) => {
+const useInstalledPackages = (projectPath: string, reload: boolean) => {
   const [installedPackages, setInstalledPackages] = useState<PackageInfo[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -18,9 +18,9 @@ const useInstalledPackages = (projectPath: string) => {
       .finally(() => {
         setIsLoading(false)
       })
-  }, [projectPath])
+  }, [projectPath, reload])
 
-  return { installedPackages, isLoading }
+  return { installedPackages, setInstalledPackages, isLoading }
 }
 
 export default useInstalledPackages

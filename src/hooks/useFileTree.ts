@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import FileNode from "../models/FileNode"
+import FileNode from "../types/frontend/FileNode"
 import loadDir from "@/utils/loadDir"
 
 export const useFileTree = (rootPath: string) => {

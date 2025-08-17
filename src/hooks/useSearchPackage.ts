@@ -1,9 +1,9 @@
-import PackageInfo from "@/types/backend/PackageInfo"
+import PackageInfo from "@/types/frontend/PackageInfo"
 import searchPackages from "@/utils/searchPackage"
 import { invoke } from "@tauri-apps/api/core"
 import { useEffect, useState } from "react"
 
-const useSearchPackage = (query: string) => {
+const useSearchPackage = (query: string, projectPath: string) => {
   const [packages, setPackages] = useState<PackageInfo[]>([])
   const [isSearching, setIsSearching] = useState(true)
 
@@ -14,7 +14,7 @@ const useSearchPackage = (query: string) => {
       return
     }
 
-    searchPackages(query, 10)
+    searchPackages(query, 10, projectPath)
       .then((results) => {
         setPackages(results)
       })

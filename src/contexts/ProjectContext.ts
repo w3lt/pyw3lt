@@ -1,5 +1,5 @@
 import { UtilityTabId } from "@/components/UtilityBar/utilityTabs"
-import FileNode from "@/models/FileNode"
+import FileNode from "@/types/frontend/FileNode"
 import { createContext, Dispatch, SetStateAction } from "react"
 
 export interface Buffer {

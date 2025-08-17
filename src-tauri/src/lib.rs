@@ -32,6 +32,7 @@ pub fn run() {
             commands::pypi::get_last_sync_time,
             commands::python_package::list_installed_packages,
             commands::python_package::install_python_package,
+            commands::python_package::uninstall_python_package,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
