@@ -1,4 +1,4 @@
-import getLastSyncTime from "@/utils/getLasSyncTime"
+import getLastSyncTime from "@/utils/getLastSyncTime"
 import { useEffect, useState } from "react"
 
 const useLastSyncTime = () => {

@@ -1,16 +1,10 @@
 use std::fs;
 use std::path::Path;
 use std::process::Command;
-use serde::Deserialize;
 use tauri::{command};
 use crate::commands::pypi::PackageInfo;
 use crate::utils::python_package::query_package_info;
 use toml::Value;
-
-#[derive(Deserialize)]
-struct PipPackage {
-    name: String,
-}
 
 #[command]
 pub async fn list_installed_packages(project_path: String) -> Result<Vec<PackageInfo>, String> {
@@ -40,7 +34,7 @@ pub async fn list_installed_packages(project_path: String) -> Result<Vec<Package
                     } else {
                         None
                     };
-                    let mut  package_info = query_package_info(name, project_path.clone());
+                    let mut package_info = query_package_info(name, project_path.clone());
                     package_info.installed_version = if version.is_some() {
                         version
                     } else {
