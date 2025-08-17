@@ -5,7 +5,7 @@ import pluginReact from "eslint-plugin-react"
 import { defineConfig } from "eslint/config"
 import reactHooks from "eslint-plugin-react-hooks"
 import tsParser from "@typescript-eslint/parser"
-import stylistic from '@stylistic/eslint-plugin'
+import stylistic from "@stylistic/eslint-plugin"
 
 export default defineConfig([
   {
@@ -31,8 +31,9 @@ export default defineConfig([
         project: "./tsconfig.json",
       },
     },
+    ignores: ["vite.config.ts"],
     plugins: {
-      '@stylistic': stylistic,
+      "@stylistic": stylistic,
     },
     rules: {
       "semi": ["error", "never"],
@@ -49,7 +50,7 @@ export default defineConfig([
       ],
     }
   },
-  ...tseslint.configs.recommended as any,
+  tseslint.configs.recommended,
   {
     ...pluginReact.configs.flat.recommended,
     rules: {
