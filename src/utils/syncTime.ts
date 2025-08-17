@@ -1,5 +1,4 @@
-const formatSyncTime = (date: Date) => {
-  const now = new Date()
+const formatSyncTime = (date: Date, now: Date) => {
   const diffMs = now.getTime() - date.getTime()
   const diffMins = Math.floor(diffMs / (1000 * 60))
 

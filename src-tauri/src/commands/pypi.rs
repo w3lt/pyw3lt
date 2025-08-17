@@ -59,3 +59,21 @@ pub async fn search_packages(query: String, result_number: Option<usize>) -> Res
         .await
         .map_err(|e| e.to_string())
 }
+
+#[command]
+pub async fn sync_package_list() -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        utils::pypi::sync_package_list().unwrap()
+    })
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[command]
+pub async fn get_last_sync_time() -> Result<usize, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        utils::pypi::get_last_sync_time().unwrap()
+    })
+        .await
+        .map_err(|e| e.to_string())
+}

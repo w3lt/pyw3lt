@@ -11,6 +11,13 @@ fn package_list_path() -> PathBuf {
         .join("package-list")
 }
 
+fn sync_time_path() -> PathBuf {
+    dirs::home_dir()
+        .expect("No home directory found")
+        .join(".pymon")
+        .join("sync-time")
+}
+
 /// Downloads the package list from PyPI and stores it locally
 pub fn sync_package_list() -> io::Result<()> {
     let url = "https://pypi.org/simple/"; // This returns HTML with all package names
@@ -57,6 +64,17 @@ pub fn sync_package_list() -> io::Result<()> {
     }
 
     println!("Saved {} package names to {:?}", names.len(), path);
+
+    // Save the timestamp of the last sync
+    let sync_time_path = sync_time_path();
+    if let Some(parent) = sync_time_path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let mut sync_file = std::fs::File::create(&sync_time_path)?;
+
+    let sync_time = std::time::SystemTime::now();
+    writeln!(sync_file, "{}", sync_time.duration_since(std::time::UNIX_EPOCH).unwrap().as_millis())?;
+
     Ok(())
 }
 
@@ -79,4 +97,14 @@ pub fn search_packages(query: &str, result_number: usize) -> Vec<(String, i64)> 
 
     // return only the top N results
     results.into_iter().take(result_number).collect()
+}
+
+pub fn get_last_sync_time() -> Result<usize, String> {
+    let sync_time_path = sync_time_path();
+    match fs::read_to_string(sync_time_path) {
+        Ok(content) => {
+            content.trim().parse::<usize>().map_err(|e| e.to_string())
+        }
+        Err(e) => Err(format!("Failed to read sync time: {}", e)),
+    }
 }
