@@ -16,10 +16,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
 import { open } from "@tauri-apps/plugin-dialog"
-import { invoke } from "@tauri-apps/api/core"
 import createProject from "@/utils/createProject"
 import useAvailablePythonVersions from "@/hooks/useAvailablePythonVersions"
 import { AppContext } from "@/contexts/AppContext"
+import log from "@/utils/log"
 
 export default function NewProjectDialog() {
   const { newProjectDialogOpen, setNewProjectDialogOpen, homeDir } = useContext(AppContext)
@@ -41,7 +41,7 @@ export default function NewProjectDialog() {
         pythonVersion
       })
     } catch (error) {
-      await invoke("log", { message: `Error creating project: ${error}` })
+      log(`Error creating project: ${error}`)
     } finally {
       if (pythonVersion && projectPath && projectName) {
         // Reset form
@@ -122,7 +122,7 @@ export default function NewProjectDialog() {
                         }
                       })
                       .catch(async error => {
-                        await invoke("log", { message: `File picker error: ${error}` })
+                        log(`File picker error: ${error}`)
                       })
                   }}
                   className={cn(

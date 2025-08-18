@@ -1,6 +1,6 @@
 import PackageInfo from "@/types/frontend/PackageInfo"
 import listInstalledPackages from "@/utils/listInstalledPackages"
-import { invoke } from "@tauri-apps/api/core"
+import log from "@/utils/log"
 import { useEffect, useState } from "react"
 
 const useInstalledPackages = (projectPath: string, reload: boolean) => {
@@ -13,7 +13,7 @@ const useInstalledPackages = (projectPath: string, reload: boolean) => {
         setInstalledPackages(res)
       })
       .catch(async (error) => {
-        await invoke("log", { message: error })
+        log(error)
       })
       .finally(() => {
         setIsLoading(false)

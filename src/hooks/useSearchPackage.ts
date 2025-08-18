@@ -1,6 +1,6 @@
 import PackageInfo from "@/types/frontend/PackageInfo"
+import log from "@/utils/log"
 import searchPackages from "@/utils/searchPackage"
-import { invoke } from "@tauri-apps/api/core"
 import { useEffect, useState } from "react"
 
 const useSearchPackage = (query: string, projectPath: string) => {
@@ -19,7 +19,7 @@ const useSearchPackage = (query: string, projectPath: string) => {
         setPackages(results)
       })
       .catch(async (error) => {
-        await invoke("log", { message: error })
+        log(error)
       })
       .finally(() => {
         setIsSearching(false)

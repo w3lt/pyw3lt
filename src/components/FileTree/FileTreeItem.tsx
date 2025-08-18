@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils"
 import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react"
 import { ProjectContext } from "@/contexts/ProjectContext"
 import readFile from "@/utils/readFile"
-import { invoke } from "@tauri-apps/api/core"
 import getFileIcon from "@/utils/fileIcon"
+import log from "@/utils/log"
 
 interface FileTreeItemProps {
   node: FileNode
@@ -51,7 +51,7 @@ export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItem
             })
           })
           .catch(async err => {
-            await invoke("log", { message: err.toString() })
+            log(err.toString())
           })
       }
     }

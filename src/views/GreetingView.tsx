@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { AppContext } from "@/contexts/AppContext"
 import { cn } from "@/lib/utils"
+import log from "@/utils/log"
 import { invoke } from "@tauri-apps/api/core"
 import { Code2, FolderOpen, Plus, Sparkles } from "lucide-react"
 import { useContext } from "react"
@@ -17,7 +18,7 @@ export default function GreetingView() {
   const handleOpenProject = () => {
     invoke("open_project")
       .catch(async error => {
-        await invoke("log", { message: `Error opening project: ${error}` })
+        log(`Error opening project: ${error}`)
       })
   }
 

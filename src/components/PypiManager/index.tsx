@@ -2,13 +2,13 @@ import UtilityContent from "../UtilityContent"
 import { useContext, useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
 import searchPackages from "@/utils/searchPackage"
-import { invoke } from "@tauri-apps/api/core"
 import PackageListItem from "./PackageListItem"
 import { ScrollArea } from "@radix-ui/react-scroll-area"
 import SyncStatusBar from "./SyncStatusBar"
 import useInstalledPackages from "@/hooks/useInstalledPackages"
 import { ProjectContext } from "@/contexts/ProjectContext"
 import PackageInfo from "@/types/frontend/PackageInfo"
+import log from "@/utils/log"
 
 export default function PypiManager() {
   const { currentDirectory } = useContext(ProjectContext)
@@ -34,7 +34,7 @@ export default function PypiManager() {
         setPackages(results)
       })
       .catch(async (error) => {
-        await invoke("log", { message: error })
+        log(error)
       })
       .finally(() => {
         setIsSearching(false)

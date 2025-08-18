@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { Editor } from "@monaco-editor/react"
 import { useBackendEventListener } from "@/hooks/backendEventListener"
 import FileTree from "@/components/FileTree"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
@@ -9,6 +8,8 @@ import Bufferline from "@/components/Bufferline"
 import { UtilityTabId } from "@/components/UtilityBar/utilityTabs"
 import { UtilitiesBar } from "@/components/UtilityBar"
 import PypiManager from "@/components/PypiManager"
+import BufferEditor from "@/components/BufferEditor"
+import log from "@/utils/log"
 
 interface Props {
   projectRootPath: string
@@ -27,7 +28,7 @@ export default function MainView({ projectRootPath }: Props) {
       content: buffers,
     })
       .catch((error) => {
-        void invoke("log", { message: `Error saving file: ${error}` })
+        log(`Error saving file: ${error}`)
       })
   })
 
@@ -58,31 +59,9 @@ export default function MainView({ projectRootPath }: Props) {
           <Panel>
             <div className="h-full">
               {buffers.length > 0 && <Bufferline />}
-              <Editor
-                height="100%"
-                width="100%"
-                defaultLanguage="python"
-                value={currentBuffer?.bufferContent}
-                theme="vs-light"
-                onChange={(value) => setBuffers(prev => {
-                  const newPrev = [...prev]
-                  const index = newPrev.findIndex(b => b.active)
-                  if (index !== -1) {
-                    newPrev[index] = {
-                      ...newPrev[index],
-                      bufferContent: value ?? "",
-                      isDirty: true
-                    }
-                  }
-                  return newPrev
-                })}
-                options={{
-                  fontSize: 14,
-                  minimap: { enabled: false },
-                  scrollBeyondLastLine: false,
-                  wordWrap: "on",
-                }}
-              />
+              {currentBuffer && (
+                <BufferEditor buffer={currentBuffer} setBuffers={setBuffers} />
+              )}
             </div>
           </Panel>
         </PanelGroup>
