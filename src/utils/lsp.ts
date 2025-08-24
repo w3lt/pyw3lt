@@ -1,43 +1,62 @@
 import { CompletionList } from "vscode-languageserver-protocol"
 
-let ws: WebSocket
-let requestId = 0
-const pending: Record<number, (res: any) => void> = {}
-
-export function connectLsp(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    ws = new WebSocket("ws://localhost:30000")
-
-    ws.onopen = () => {
-      console.log("LSP connected")
-      resolve()
-    }
-
-    ws.onerror = (err) => reject(err)
-
-    ws.onmessage = (event) => {
-      const raw = event.data as string
-      const json = raw.substring(raw.indexOf("{"))
-      const msg = JSON.parse(json)
-
-      if (msg.id && pending[msg.id]) {
-        pending[msg.id](msg.result)
-        delete pending[msg.id]
-      }
-      if (msg.method === "textDocument/publishDiagnostics") {
-        // TODO: handle diagnostics here
-      }
-    }
-  })
+interface PendingRequest<T> {
+  resolve: (res: T) => void
+  timestamp: number
+  method: string
 }
 
-export function sendLspRequest(method: string, params: object): Promise<CompletionList> {
-  return new Promise((resolve) => {
-    const id = ++requestId
-    pending[id] = resolve
+export default class LspClient {
+  private ws!: WebSocket
+  private requestId = 0
+  private pending: Record<number, PendingRequest<CompletionList>> = {}
 
-    const payload = JSON.stringify({ jsonrpc: "2.0", id, method, params })
+  /**
+   * Creates an instance of the LspClient.
+   * @param url The WebSocket URL to connect to.
+   */
+  constructor(private url: string) { }
 
-    ws.send(payload)
-  })
+  public connect(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.ws = new WebSocket(this.url)
+
+      this.ws.onopen = () => resolve()
+      this.ws.onerror = (err) => reject(err)
+
+      this.ws.onmessage = (event) => {
+        const raw = event.data as string
+        const json = raw.substring(raw.indexOf("{"))
+        const msg = JSON.parse(json)
+
+        if (msg.id && this.pending[msg.id]) {
+          this.pending[msg.id].resolve(msg.result)
+          delete this.pending[msg.id]
+        }
+
+        if (msg.method === "textDocument/publishDiagnostics") {
+          // handle diagnostics
+        }
+      }
+    })
+  }
+
+  public sendRequest(method: string, params: object, timeout = 5000): Promise<CompletionList> {
+    return new Promise((resolve, reject) => {
+      const id = ++this.requestId
+      this.pending[id] = { resolve, timestamp: Date.now(), method }
+
+      const payload = JSON.stringify({ jsonrpc: "2.0", id, method, params })
+      this.ws.send(payload)
+
+      if (timeout > 0) {
+        setTimeout(() => {
+          if (this.pending[id]) {
+            delete this.pending[id]
+            reject(new Error(`LSP request "${method}" timed out`))
+          }
+        }, timeout)
+      }
+    })
+  }
 }

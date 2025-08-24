@@ -1,11 +1,12 @@
 import { Editor } from "@monaco-editor/react"
 import { Buffer, ProjectContext } from "@/contexts/ProjectContext"
 import { Dispatch, SetStateAction, useContext } from "react"
-import { connectLsp, sendLspRequest } from "@/utils/lsp"
+import LspClient from "@/utils/lsp"
 import {
   CompletionList,
   CompletionTriggerKind
 } from "vscode-languageserver-protocol"
+import langOfFile from "@/utils/langOfFile"
 
 interface Props {
   buffer: Buffer
@@ -14,12 +15,13 @@ interface Props {
 
 export default function BufferEditor({ buffer, setBuffers }: Props) {
   const { currentDirectory } = useContext(ProjectContext)
+  const lspClient = new LspClient("ws://localhost:30000")
 
   return (
     <Editor
       height="100%"
       width="100%"
-      language="python"
+      language={langOfFile(buffer.file.path) || "plaintext"}
       value={buffer.bufferContent}
       theme="vs"
       onChange={(value) => setBuffers(prev => {
@@ -40,11 +42,13 @@ export default function BufferEditor({ buffer, setBuffers }: Props) {
         scrollBeyondLastLine: false,
         wordWrap: "on",
       }}
-      onMount={(_, monaco) => {
+      onMount={(editor, monaco) => {
+        const lang = editor.getModel()?.getLanguageId()
+        if (lang !== "python") return // Currently only Python is supported
         const onLsConnect = async () => {
-          await connectLsp()
+          await lspClient.connect()
 
-          await sendLspRequest("initialize", {
+          await lspClient.sendRequest("initialize", {
             rootUri: currentDirectory,
             workspaceFolders: [
               { uri: currentDirectory, name: "workspace" }
@@ -72,13 +76,13 @@ export default function BufferEditor({ buffer, setBuffers }: Props) {
             }
           })
 
-          await sendLspRequest("initialized", {})
+          await lspClient.sendRequest("initialized", {})
         }
         onLsConnect()
           .then(() => {
             monaco.languages.registerCompletionItemProvider("python", {
               provideCompletionItems: async (model, position) => {
-                const items: CompletionList = await sendLspRequest("textDocument/completion", {
+                const items: CompletionList = await lspClient.sendRequest("textDocument/completion", {
                   textDocument: { uri: buffer.file.path },
                   position: { line: position.lineNumber - 1, character: position.column - 1 },
                   context: { triggerKind: CompletionTriggerKind.Invoked },
