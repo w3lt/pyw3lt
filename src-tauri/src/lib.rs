@@ -11,6 +11,10 @@ fn log(message: &str) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    tauri::async_runtime::spawn(async {
+        utils::lsp::spawn_lsp_process().await;
+    });
+
     tauri::Builder::default()
         .setup(|app| {
             menu::menu::create_menu(app)?;
