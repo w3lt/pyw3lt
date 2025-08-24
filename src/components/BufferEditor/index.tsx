@@ -1,10 +1,11 @@
 import { Editor } from "@monaco-editor/react"
 import { Buffer, ProjectContext } from "@/contexts/ProjectContext"
-import { Dispatch, SetStateAction, useContext } from "react"
+import { Dispatch, SetStateAction, useContext, useRef } from "react"
 import LspClient from "@/utils/lsp"
 import {
   CompletionList,
-  CompletionTriggerKind
+  CompletionTriggerKind,
+  InitializeParams
 } from "vscode-languageserver-protocol"
 import langOfFile from "@/utils/langOfFile"
 
@@ -15,7 +16,10 @@ interface Props {
 
 export default function BufferEditor({ buffer, setBuffers }: Props) {
   const { currentDirectory } = useContext(ProjectContext)
-  const lspClient = new LspClient("ws://localhost:30000")
+  const lspClientRef = useRef(new LspClient("ws://localhost:30000"))
+  const versionRef = useRef(1)
+
+  const bufferUri = `inmemory://model${buffer.file.path}`
 
   return (
     <Editor
@@ -24,18 +28,23 @@ export default function BufferEditor({ buffer, setBuffers }: Props) {
       language={langOfFile(buffer.file.path) || "plaintext"}
       value={buffer.bufferContent}
       theme="vs"
-      onChange={(value) => setBuffers(prev => {
-        const newPrev = [...prev]
-        const index = newPrev.findIndex(b => b.active)
-        if (index !== -1) {
-          newPrev[index] = {
-            ...newPrev[index],
-            bufferContent: value ?? "",
-            isDirty: true
+      onChange={(value) => {
+        setBuffers(prev => {
+          const newPrev = [...prev]
+          const index = newPrev.findIndex(b => b.active)
+          if (index !== -1) {
+            newPrev[index] = {
+              ...newPrev[index],
+              bufferContent: value ?? "",
+              isDirty: true
+            }
           }
-        }
-        return newPrev
-      })}
+          return newPrev
+        })
+
+        versionRef.current++
+        lspClientRef.current.didChange(bufferUri, value ?? "", versionRef.current)
+      }}
       options={{
         fontSize: 14,
         minimap: { enabled: false },
@@ -45,45 +54,45 @@ export default function BufferEditor({ buffer, setBuffers }: Props) {
       onMount={(editor, monaco) => {
         const lang = editor.getModel()?.getLanguageId()
         if (lang !== "python") return // Currently only Python is supported
-        const onLsConnect = async () => {
-          await lspClient.connect()
 
-          await lspClient.sendRequest("initialize", {
+        const onLsConnect = async () => {
+          await lspClientRef.current.connect()
+
+          await lspClientRef.current.sendRequest<InitializeParams>("initialize", {
+            processId: null,
             rootUri: currentDirectory,
             workspaceFolders: [
               { uri: currentDirectory, name: "workspace" }
             ],
             capabilities: {
               textDocument: {
-                synchronization: {
-                  didSave: true,
-                  willSave: false,
-                  willSaveWaitUntil: false,
-                  didChange: true,
-                },
-                completion: {
-                  completionItem: {
-                    snippetSupport: true
-                  }
-                },
-                hover: {
-                  dynamicRegistration: false
-                }
+                synchronization: { didSave: true, willSave: false, willSaveWaitUntil: false },
+                completion: { completionItem: { snippetSupport: true } },
+                hover: { dynamicRegistration: false }
               },
-              workspace: {
-                workspaceFolders: true
-              }
+              workspace: { workspaceFolders: true }
             }
           })
 
-          await lspClient.sendRequest("initialized", {})
+          await lspClientRef.current.sendRequest("initialized", {})
+
+          // Open in-memory document
+          lspClientRef.current.didOpen(bufferUri, buffer.bufferContent)
+
+          lspClientRef.current.onDiagnostics((uri, diagnostics) => {
+            const model = editor.getModel()
+            if (model && bufferUri === uri) {
+              monaco.editor.setModelMarkers(model, "python-lsp", diagnostics)
+            }
+          })
         }
+
         onLsConnect()
           .then(() => {
             monaco.languages.registerCompletionItemProvider("python", {
               provideCompletionItems: async (model, position) => {
-                const items: CompletionList = await lspClient.sendRequest("textDocument/completion", {
-                  textDocument: { uri: buffer.file.path },
+                const items: CompletionList = await lspClientRef.current.sendRequest("textDocument/completion", {
+                  textDocument: { uri: bufferUri },
                   position: { line: position.lineNumber - 1, character: position.column - 1 },
                   context: { triggerKind: CompletionTriggerKind.Invoked },
                 })
