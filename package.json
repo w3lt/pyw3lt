@@ -1,5 +1,5 @@
 {
-  "name": "pymon",
+  "name": "pyw3lt",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -18,6 +18,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.11",
     "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-clipboard-manager": "^2.3.0",
     "@tauri-apps/plugin-dialog": "^2.3.2",
     "@tauri-apps/plugin-opener": "^2",
     "class-variance-authority": "^0.7.1",
@@ -30,7 +31,8 @@
     "react-resizable-panels": "^3.0.4",
     "tailwind-merge": "^3.3.1",
     "tailwind-scrollbar-hide": "^4.0.0",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.1.11",
+    "vscode-languageserver-protocol": "^3.17.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

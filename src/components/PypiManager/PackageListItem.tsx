@@ -1,13 +1,13 @@
 import { useContext, useState } from "react"
 import { ProjectContext } from "@/contexts/ProjectContext"
 import installPythonPackage from "@/utils/installPythonPackage"
-import { invoke } from "@tauri-apps/api/core"
 import { cn } from "@/lib/utils"
 import PackageInfo from "@/types/frontend/PackageInfo"
 import RemoveButton from "./buttons/RemoveButton"
 import InstallButton from "./buttons/InstallButton"
 import UpdateButton from "./buttons/UpdateButton"
 import uninstallPythonPackage from "@/utils/uninstallPythonPackage"
+import log from "@/utils/log"
 
 interface Props {
   info: PackageInfo
@@ -40,7 +40,7 @@ export default function PackageListItem({
     setIsInstalling(true)
     installPythonPackage(name, currentDirectory, version)
       .catch(async (error) => {
-        invoke("log", { message: error })
+        log(error)
       })
       .finally(() => {
         setIsInstalling(false)
@@ -52,7 +52,7 @@ export default function PackageListItem({
     setIsUninstalling(true)
     uninstallPythonPackage(name, currentDirectory)
       .catch(async (error) => {
-        invoke("log", { message: error })
+        log(error)
       })
       .finally(() => {
         setIsUninstalling(false)

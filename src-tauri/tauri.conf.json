@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "pymon",
+  "productName": "pyw3lt",
   "version": "0.1.0",
-  "identifier": "com.w3lt.pymon",
+  "identifier": "com.w3lt.pyw3lt",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Pymon",
+        "title": "PyW3lt",
         "width": 800,
         "height": 600,
         "resizable": true,

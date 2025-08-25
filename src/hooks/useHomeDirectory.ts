@@ -1,3 +1,4 @@
+import log from "@/utils/log"
 import { invoke } from "@tauri-apps/api/core"
 import { useEffect, useState } from "react"
 
@@ -11,7 +12,7 @@ export default function useHomeDirectory() {
         setHomeDir(res as string)
       })
       .catch(async error => {
-        await invoke("log", { message: `Error getting current directory: ${error}` })
+        log(`Error getting current directory: ${error}`)
       })
       .finally(() => {
         setIsLoading(false)

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { AppContext } from "@/contexts/AppContext"
 import { cn } from "@/lib/utils"
+import log from "@/utils/log"
 import { invoke } from "@tauri-apps/api/core"
 import { Code2, FolderOpen, Plus, Sparkles } from "lucide-react"
 import { useContext } from "react"
@@ -17,7 +18,7 @@ export default function GreetingView() {
   const handleOpenProject = () => {
     invoke("open_project")
       .catch(async error => {
-        await invoke("log", { message: `Error opening project: ${error}` })
+        log(`Error opening project: ${error}`)
       })
   }
 
@@ -34,7 +35,7 @@ export default function GreetingView() {
                 <Code2 className="w-8 h-8 text-white" />
               </div>
             </div>
-            <h1 className="text-4xl font-bold text-foreground mb-2">Welcome to Pymon!</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Welcome to PyW3lt!</h1>
             <p className="text-muted-foreground text-lg">Your Python development environment</p>
           </div>
 

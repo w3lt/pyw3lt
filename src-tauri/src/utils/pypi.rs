@@ -3,18 +3,18 @@ use fuzzy_matcher::FuzzyMatcher;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use reqwest::blocking::get;
 
-/// Returns the path to the local package list file (~/.pymon/package-list)
+/// Returns the path to the local package list file (~/.pyw3lt/package-list)
 fn package_list_path() -> PathBuf {
     dirs::home_dir()
         .expect("No home directory found")
-        .join(".pymon")
+        .join(".pyw3lt")
         .join("package-list")
 }
 
 fn sync_time_path() -> PathBuf {
     dirs::home_dir()
         .expect("No home directory found")
-        .join(".pymon")
+        .join(".pyw3lt")
         .join("sync-time")
 }
 

@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button"
 import useLastSyncTime from "@/hooks/useLastSyncTime"
 import useNow from "@/hooks/useNow"
+import log from "@/utils/log"
 import syncPackageList from "@/utils/syncPackageList"
 import formatSyncTime from "@/utils/syncTime"
-import { invoke } from "@tauri-apps/api/core"
 import { Loader2, RefreshCw } from "lucide-react"
 import { useState } from "react"
 
@@ -27,7 +27,7 @@ export default function SyncStatusBar({ onPostSync }: Props) {
         onPostSync?.()
       })
       .catch(async (error) => {
-        await invoke("log", { message: error })
+        log(error)
       })
       .finally(() => {
         setIsSyncing(false)
