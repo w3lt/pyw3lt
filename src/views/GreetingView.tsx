@@ -35,7 +35,7 @@ export default function GreetingView() {
                 <Code2 className="w-8 h-8 text-white" />
               </div>
             </div>
-            <h1 className="text-4xl font-bold text-foreground mb-2">Welcome to Pymon!</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Welcome to PyW3lt!</h1>
             <p className="text-muted-foreground text-lg">Your Python development environment</p>
           </div>
 

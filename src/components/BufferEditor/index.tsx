@@ -29,6 +29,7 @@ export default function BufferEditor({ buffer, setBuffers }: Props) {
       value={buffer.bufferContent}
       theme="vs"
       onChange={(value) => {
+        console.log("Changed", value)
         setBuffers(prev => {
           const newPrev = [...prev]
           const index = newPrev.findIndex(b => b.active)

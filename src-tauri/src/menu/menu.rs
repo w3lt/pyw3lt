@@ -2,7 +2,7 @@ use tauri::{menu::{AboutMetadata, MenuBuilder, SubmenuBuilder}, App, Runtime};
 use crate::menu::file_submenu;
 
 pub fn create_menu<R: Runtime>(app: &mut App<R>) -> tauri::Result<()> {
-    let app_submenu = SubmenuBuilder::new(app, "Pymon")
+    let app_submenu = SubmenuBuilder::new(app, "PyW3lt")
         .about(Some(AboutMetadata {
             ..Default::default()
         }))

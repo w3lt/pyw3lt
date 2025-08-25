@@ -7,13 +7,6 @@ interface PendingRequest<T> {
   method: string
 }
 
-// interface JsonRpcMessage<T> {
-//   jsonrpc: string
-//   id: number | null
-//   method: string
-//   result: T
-// }
-
 export default class LspClient {
   private ws!: WebSocket
   private requestId = 0

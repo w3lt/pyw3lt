@@ -27,7 +27,7 @@ export default function NewProjectDialog() {
   const pythonVersions = useAvailablePythonVersions()
 
   const [pythonVersion, setPythonVersion] = useState("")
-  const [projectPath, setProjectPath] = useState(`${homeDir.replace(/[\\/]+$/, "")}/Pymon Projects`)
+  const [projectPath, setProjectPath] = useState(`${homeDir.replace(/[\\/]+$/, "")}/PyW3lt Projects`)
   const [projectName, setProjectName] = useState("Untitled")
 
   const [isCreating, setIsCreating] = useState(false)

@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    pymon_lib::run()
+    pyw3lt_lib::run()
 }

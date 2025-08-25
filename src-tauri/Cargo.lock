@@ -3065,7 +3065,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "pymon"
+name = "pyw3lt"
 version = "0.1.0"
 dependencies = [
  "dirs",

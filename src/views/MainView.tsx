@@ -23,6 +23,7 @@ export default function MainView({ projectRootPath }: Props) {
 
   useBackendEventListener("save-file", () => {
     if (!currentBuffer || currentBuffer?.file.path.trim().length === 0) return
+
     void invoke("save_file", {
       path: currentBuffer.file.path,
       content: currentBuffer.bufferContent,
