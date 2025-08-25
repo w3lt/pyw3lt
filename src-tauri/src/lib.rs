@@ -1,6 +1,6 @@
 mod commands;
-mod models;
 mod menu;
+mod models;
 mod utils;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -12,12 +12,12 @@ fn log(message: &str) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::async_runtime::spawn(async {
-        utils::lsp::spawn_lsp_process().await;
+        let _ = utils::lsp::spawn_lsp_process().wait();
     });
 
     tauri::Builder::default()
         .setup(|app| {
-            menu::menu::create_menu(app)?;
+            menu::create_menu(app)?;
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())

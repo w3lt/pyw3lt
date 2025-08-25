@@ -1,9 +1,9 @@
+use crate::commands::pypi::PackageInfo;
+use crate::utils::python_package::query_package_info;
 use std::fs;
 use std::path::Path;
 use std::process::Command;
-use tauri::{command};
-use crate::commands::pypi::PackageInfo;
-use crate::utils::python_package::query_package_info;
+use tauri::command;
 use toml::Value;
 
 #[command]
@@ -49,8 +49,8 @@ pub async fn list_installed_packages(project_path: String) -> Result<Vec<Package
 
         Ok(results)
     })
-        .await
-        .map_err(|e| format!("Failed to execute uv list: {}", e))?
+    .await
+    .map_err(|e| format!("Failed to execute uv list: {}", e))?
 }
 
 /// Installs a Python package using uv.
@@ -65,7 +65,7 @@ pub async fn install_python_package(
 
     tauri::async_runtime::spawn_blocking(move || {
         let status = Command::new("uv")
-            .args(&["add", &full_package_name])
+            .args(["add", &full_package_name])
             .current_dir(project_path)
             .status()
             .map_err(|e| format!("Failed to start uv: {}", e))?;
@@ -87,8 +87,8 @@ pub async fn uninstall_python_package(
 ) -> Result<(), String> {
     tauri::async_runtime::spawn_blocking(move || {
         let status = Command::new("uv")
-            .args(&["remove", &package_name])
-            .args(&["--python", ".venv/bin/python"])
+            .args(["remove", &package_name])
+            .args(["--python", ".venv/bin/python"])
             .current_dir(project_path)
             .status()
             .map_err(|e| format!("Failed to start uv: {}", e))?;
@@ -102,3 +102,4 @@ pub async fn uninstall_python_package(
     .await
     .map_err(|e| e.to_string())?
 }
+

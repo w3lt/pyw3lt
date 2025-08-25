@@ -1,6 +1,7 @@
-use std::process::{Command, Stdio};
+use std::process::{Child, Command, Stdio};
 
-pub async fn spawn_lsp_process() {
+pub fn spawn_lsp_process() -> Child {
+    println!("pylsp starting on ws://127.0.0.1:30000");
     Command::new("pylsp")
         .arg("--ws")
         .arg("--port")
@@ -9,7 +10,5 @@ pub async fn spawn_lsp_process() {
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .spawn()
-        .expect("Failed to start pylsp process");
-
-    println!("pylsp started on ws://127.0.0.1:30000");
+        .expect("Failed to start pylsp process")
 }
