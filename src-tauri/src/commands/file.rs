@@ -4,6 +4,7 @@ use std::fs;
 #[command]
 pub async fn save_file(path: String, content: String) -> Result<(), String> {
     tauri::async_runtime::spawn_blocking(move || {
+        println!("{} {}", path, content);
         fs::write(path, content)
             .map_err(|e| format!("Failed to save file: {}", e))?;
 
