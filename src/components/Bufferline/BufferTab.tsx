@@ -16,6 +16,8 @@ export default function BufferTab({ buffer, onSelect, onClose }: Props) {
     onClose(buffer)
   }
 
+  const FileIcon = getFileIcon(buffer.file.name)
+
   return (
     <div
       className={cn(
@@ -30,7 +32,7 @@ export default function BufferTab({ buffer, onSelect, onClose }: Props) {
     >
       {/* File Icon */}
       <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
-        <span className="text-xs">{getFileIcon(buffer.file.name)}</span>
+        <span className="text-xs"><FileIcon /></span>
       </div>
 
       {/* File Name */}
