@@ -1,3 +1,6 @@
+use tauri::Manager;
+use utils::lsp::{spawn_lsp_process, LspState};
+
 mod commands;
 mod menu;
 mod models;
@@ -11,13 +14,12 @@ fn log(message: &str) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::async_runtime::spawn(async {
-        let _ = utils::lsp::spawn_lsp_process().wait();
-    });
-
     tauri::Builder::default()
         .setup(|app| {
             menu::create_menu(app)?;
+            let stdin = spawn_lsp_process(app.handle().clone())
+                .expect("Failed to spawn LSP process");
+            app.manage(LspState { stdin });
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
@@ -38,6 +40,7 @@ pub fn run() {
             commands::python_package::list_installed_packages,
             commands::python_package::install_python_package,
             commands::python_package::uninstall_python_package,
+            commands::lsp::send_lsp_message,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

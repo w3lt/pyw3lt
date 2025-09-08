@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useBackendEventListener } from "@/hooks/backendEventListener"
 import FileTree from "@/components/FileTree"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
@@ -23,6 +23,7 @@ export default function MainView({ projectRootPath }: Props) {
 
   useBackendEventListener("save-file", () => {
     if (!currentBuffer || currentBuffer?.file.path.trim().length === 0) return
+    console.log("Saving file:", currentBuffer.file.path, currentBuffer.bufferContent)
 
     void invoke("save_file", {
       path: currentBuffer.file.path,

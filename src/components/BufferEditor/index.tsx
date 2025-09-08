@@ -16,7 +16,7 @@ interface Props {
 
 export default function BufferEditor({ buffer, setBuffers }: Props) {
   const { currentDirectory } = useContext(ProjectContext)
-  const lspClientRef = useRef(new LspClient("ws://localhost:30000"))
+  const lspClientRef = useRef(new LspClient())
   const versionRef = useRef(1)
 
   const bufferUri = `inmemory://model${buffer.file.path}`
@@ -29,7 +29,6 @@ export default function BufferEditor({ buffer, setBuffers }: Props) {
       value={buffer.bufferContent}
       theme="vs"
       onChange={(value) => {
-        console.log("Changed", value)
         setBuffers(prev => {
           const newPrev = [...prev]
           const index = newPrev.findIndex(b => b.active)
@@ -57,7 +56,14 @@ export default function BufferEditor({ buffer, setBuffers }: Props) {
         if (lang !== "python") return // Currently only Python is supported
 
         const onLsConnect = async () => {
-          await lspClientRef.current.connect()
+          await lspClientRef.current.initListener()
+
+          lspClientRef.current.onDiagnosticsCallback = (uri, diagnostics) => {
+            const model = editor.getModel()
+            if (model && bufferUri === uri) {
+              monaco.editor.setModelMarkers(model, "python-lsp", diagnostics)
+            }
+          }
 
           await lspClientRef.current.sendRequest<InitializeParams>("initialize", {
             processId: null,
@@ -78,14 +84,7 @@ export default function BufferEditor({ buffer, setBuffers }: Props) {
           await lspClientRef.current.sendRequest("initialized", {})
 
           // Open in-memory document
-          lspClientRef.current.didOpen(bufferUri, buffer.bufferContent)
-
-          lspClientRef.current.onDiagnostics((uri, diagnostics) => {
-            const model = editor.getModel()
-            if (model && bufferUri === uri) {
-              monaco.editor.setModelMarkers(model, "python-lsp", diagnostics)
-            }
-          })
+          await lspClientRef.current.didOpen(bufferUri, buffer.bufferContent)
         }
 
         onLsConnect()

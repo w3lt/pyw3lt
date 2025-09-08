@@ -1,5 +1,5 @@
 use crate::models::file_node::FileNode;
-use std::{fs};
+use std::fs;
 use std::path::PathBuf;
 use tauri::command;
 
@@ -27,7 +27,7 @@ pub fn list_dir_recursive(path: PathBuf) -> Vec<FileNode> {
                 name,
                 path: path.to_string_lossy().to_string(),
                 is_dir,
-                children
+                children,
             });
         }
     }
