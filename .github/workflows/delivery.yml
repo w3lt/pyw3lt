@@ -1,0 +1,70 @@
+name: Build and Release Tauri App (macOS)
+
+on:
+  push:
+    tags:
+      - 'v*'      # Run when a version tag is pushed, e.g., v1.0.0
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      # 3. Install pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # 4. Install project dependencies
+      - name: Install dependencies
+        run: pnpm install
+
+      # 5. Setup Rust
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+
+      # 6. Build Tauri app
+      - name: Build Tauri App
+        run: pnpm tauri build
+
+      # 7. Upload the macOS bundle as artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-macos-build
+          path: src-tauri/target/release/bundle/macos
+          
+  release:
+    needs: build
+    runs-on: macos-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      # 1. Download the build artifact
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tauri-macos-build
+          path: release/
+
+      # 2. Create a GitHub Release and attach the bundle
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/**/* 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
