@@ -25,7 +25,7 @@ pub fn spawn_lsp_process(app_handle: tauri::AppHandle) -> Result<Arc<Mutex<Child
     let app_handle_clone = app_handle.clone();
     tauri::async_runtime::spawn(async move {
         loop {
-            let mut contetnt_length: Option<usize> = None;
+            let mut content_length: Option<usize> = None;
             let mut header = String::new();
 
             loop {
@@ -37,11 +37,11 @@ pub fn spawn_lsp_process(app_handle: tauri::AppHandle) -> Result<Arc<Mutex<Child
                     break; // End of headers
                 }
                 if let Some(len_str) = header.strip_prefix("Content-Length: ") {
-                    contetnt_length = len_str.trim().parse::<usize>().ok();
+                    content_length = len_str.trim().parse::<usize>().ok();
                 }
             }
 
-            if let Some(len) = contetnt_length {
+            if let Some(len) = content_length {
                 let mut body = vec![0; len];
                 reader.read_exact(&mut body).unwrap();
                 let msg = String::from_utf8_lossy(&body).to_string();
