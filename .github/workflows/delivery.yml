@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   build:
+    name: Build Tauri App for macOS
     runs-on: macos-latest
 
     steps:
@@ -45,13 +46,14 @@ jobs:
         run: pnpm tauri build
 
       # 7. Upload the macOS bundle as artifact
-      - name: Upload artifact
+      - name: Upload artifact (DMG)
         uses: actions/upload-artifact@v4
         with:
-          name: tauri-macos-build
-          path: src-tauri/target/release/bundle/macos
+          name: tauri-macos-dmg
+          path: src-tauri/target/release/bundle/dmg/*.dmg
           
   release:
+    name: Create GitHub Release
     needs: build
     runs-on: macos-latest
     if: startsWith(github.ref, 'refs/tags/v')
@@ -61,13 +63,13 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: tauri-macos-build
+          name: tauri-macos-dmg
           path: release/
 
       # 2. Create a GitHub Release and attach the bundle
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release/**/* 
+          files: release/*.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
