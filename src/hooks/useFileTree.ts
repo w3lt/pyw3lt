@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import FileNode from "../types/frontend/FileNode"
-import loadDir from "@/utils/loadDir"
+import { loadDir } from "@/utils/project"
 
 export const useFileTree = (rootPath: string) => {
   const [fileTree, setFileTree] = useState<FileNode>({
@@ -29,5 +29,5 @@ export const useFileTree = (rootPath: string) => {
       })
   }, [rootPath])
 
-  return { fileTree, isLoading, error }
+  return { fileTree, isLoading, error, setFileTree }
 }

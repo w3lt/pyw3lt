@@ -1,6 +1,10 @@
 use std::process::Command;
 use std::{fs, path::PathBuf};
 use tauri::command;
+use notify::{recommended_watcher, RecursiveMode, Watcher};
+use std::sync::mpsc::channel;
+use tauri::{AppHandle, Emitter};
+use crate::commands::fs::list_dir_recursive;
 
 #[command]
 pub async fn create_project(
@@ -35,5 +39,56 @@ pub async fn create_project(
     })
     .await
     .map_err(|e| e.to_string())?
+}
+
+#[command]
+pub fn watch_project_dir(app_handle: AppHandle, path: String) -> Result<(), String> {
+    let path = PathBuf::from(path);
+
+    // Clone the handle so the background thread can use it
+    let app_handle = app_handle.clone();
+
+    std::thread::spawn(move || {
+        // channel lives in the same thread as watcher
+        let (tx, rx) = channel();
+
+        // create watcher inside the thread so it won't be dropped when this fn returns
+        let mut watcher = match recommended_watcher(tx) {
+            Ok(w) => w,
+            Err(e) => {
+                eprintln!("Failed to create watcher: {:?}", e);
+                return;
+            }
+        };
+
+        if let Err(e) = watcher.watch(&path, RecursiveMode::Recursive) {
+            eprintln!("Failed to watch project files: {:?}", e);
+            return;
+        }
+
+        println!("Watching project directory: {}", path.display());
+
+        // Blocking loop on the thread (ok, it's a dedicated thread)
+        for res in rx {
+            match res {
+                Ok(event) => {
+                    // Rebuild the file tree and send it to the frontend
+                    let tree = list_dir_recursive(path.clone());
+
+                    // Emit to all windows; adjust to `emit` if you have a specific window label
+                    if let Err(e) = app_handle.emit("project-updated", &tree) {
+                        eprintln!("Failed to emit project-updated: {:?}", e);
+                    }
+                }
+                Err(e) => {
+                    eprintln!("watch error: {:?}", e);
+                }
+            }
+        }
+
+        // when rx is closed the for loop ends and thread exits
+    });
+
+    Ok(())
 }
 
