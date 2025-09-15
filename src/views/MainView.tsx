@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useBackendEventListener } from "@/hooks/backendEventListener"
 import FileTree from "@/components/FileTree"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
@@ -10,6 +10,7 @@ import { UtilitiesBar } from "@/components/UtilityBar"
 import PypiManager from "@/components/PypiManager"
 import BufferEditor from "@/components/BufferEditor"
 import log from "@/utils/log"
+import { watchProjectDir } from "@/utils/project"
 
 interface Props {
   projectRootPath: string
@@ -18,12 +19,12 @@ interface Props {
 export default function MainView({ projectRootPath }: Props) {
   const [buffers, setBuffers] = useState<Buffer[]>([])
   const [activeTab, setActiveTab] = useState<UtilityTabId>("explorer")
+  const isWatchingProjectDirRef = useRef(false)
 
   const currentBuffer = buffers.find(b => b.active)
 
   useBackendEventListener("save-file", () => {
     if (!currentBuffer || currentBuffer?.file.path.trim().length === 0) return
-    console.log("Saving file:", currentBuffer.file.path, currentBuffer.bufferContent)
 
     void invoke("save_file", {
       path: currentBuffer.file.path,
@@ -36,6 +37,12 @@ export default function MainView({ projectRootPath }: Props) {
         log(`Error saving file: ${error}`)
       })
   })
+
+  useEffect(() => {
+    if (isWatchingProjectDirRef.current) return
+    watchProjectDir(projectRootPath)
+    isWatchingProjectDirRef.current = true
+  }, [])
 
   return (
     <ProjectContextProvider

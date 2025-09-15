@@ -1,12 +1,13 @@
 import FileNode from "@/types/frontend/FileNode"
-import { useContext, useState } from "react"
+import { MouseEventHandler, useContext, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react"
 import { ProjectContext } from "@/contexts/ProjectContext"
-import readFile from "@/utils/readFile"
 import getFileIcon from "@/utils/fileIcon"
 import log from "@/utils/log"
+import FileTreeContext from "./FileTreeContext"
+import { readFile } from "@/utils/file"
 
 interface FileTreeItemProps {
   node: FileNode
@@ -16,6 +17,7 @@ interface FileTreeItemProps {
 
 export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItemProps) {
   const { setBuffers, buffers } = useContext(ProjectContext)
+  const { setContextMenu } = useContext(FileTreeContext)
   const [isExpanded, setIsExpanded] = useState(node.open ?? false)
   const isDirectory = node.isDirectory
 
@@ -58,6 +60,16 @@ export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItem
     onSelect?.(node)
   }
 
+  const handleRightClick: MouseEventHandler<HTMLButtonElement> = e => {
+    e.preventDefault()
+
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      node
+    })
+  }
+
   const Icon = getFileIcon(node.name)
 
   return (
@@ -71,6 +83,7 @@ export default function FileTreeItem({ node, depth = 0, onSelect }: FileTreeItem
         )}
         style={{ paddingLeft: `${depth * 16 + 4}px` }}
         onClick={handleClick}
+        onContextMenu={handleRightClick}
       >
         {/* Expand/Collapse Icon */}
         <div className="w-4 h-4 flex items-center justify-center">
